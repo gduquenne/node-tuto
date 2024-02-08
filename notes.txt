@@ -1,0 +1,4 @@
+http://localhost:3000/mapage?utm_source=email&utm_medium=email&utm_campaign=200901
+http://localhost:3000/mapage?utm_source=email&utm_medium=email&utm_campaign=200902
+http://localhost:3000/mapage?utm_source=email&utm_medium=email&utm_campaign=200903
+http://localhost:3000/mapage?utm_source=email&utm_medium=email&utm_campaign=200904
