@@ -1,64 +1,85 @@
 import express from 'express';
 import path from 'path';
-import expressHandlebars from 'express-handlebars';
+import exphbs from 'express-handlebars';
 import url from 'url';
+import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { Time } from './routes/index.js';
-
-const PORT = process.env.PORT || 3000;
-
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+const PORT = process.env.PORT || 5003;
 
 const app = express();
 
+const catchErrors =
+	asyncFunction =>
+	(...args) =>
+		asyncFunction(...args).catch(console.error);
+
+const getAllPokemons = async () =>
+	fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
+		.then(res => res.json().then(res => res))
+		.catch(err => err);
+
+const getPokemon = async (name = 'bulbarsaur') =>
+	fetch(`https://pokeapi.co/api/v2/pokemon/${name}`).then(res =>
+		res.json().then(res => res)
+	);
+
+app.use(express.static(path.resolve(__dirname, 'public')));
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.engine(
-	'handlebars',
-	expressHandlebars.engine({
+	'hbs',
+	exphbs.engine({
 		defaultLayout: 'main',
-		// layoutsDir: path.resolve(__src, './views/layouts'),
-		// partialsDir: path.resolve(__src, './views/partials'),
+		layoutsDir: path.resolve(__dirname, 'views/layouts'),
+		partialsDir: path.resolve(__dirname, 'views/partials'),
+		viewsDir: path.resolve(__dirname, 'views'),
+		extname: '.hbs',
+		helpers: {
+			uppercase: str => str.toUpperCase(),
+			capitalize: str => str[0].toUpperCase() + str.slice(1),
+		},
 	})
 );
-app.set('view engine', 'handlebars');
+app.set('view engine', 'hbs');
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-app.use(express.static(path.resolve(__dirname, './public')));
-
-app.use((req, res, next) => {
-	const { method, path } = req;
-	console.log(`Method: ${method}, Path: ${path}`);
-	next();
+app.get('/', async (_, res) => {
+	getAllPokemons()
+		.then(pokemons => {
+			res.status(200).render('home', {
+				pokemons: pokemons.results,
+			});
+		})
+		.catch(err => console.log('error: ', err));
 });
 
-Time({ app });
-
-app.get('/', (req, res) => {
-	res.sendFile(path.resolve(__dirname, './views/index.html'));
+app.post('/search', (req, res) => {
+	const search = req.body['pokemon-name'];
+	res.redirect(`/${search}`);
 });
 
-app.post('/product', (req, res) => {
-	const { name, color } = req.body;
-	console.log(`POST /product`);
-	res.json({ name, color });
+app.get('/notFound', (_, res) => {
+	res.status(404).render('notFound');
 });
 
-app.get('/json', (req, res) => {
-	const name = process.env.NAME || 'Anonymous';
-	res.json({ message: ['Hello, world!'], name });
-});
-
-app.get('/product/:name', (req, res) => {
+app.get('/:name', (req, res) => {
+	console.log('req.params.name', req.params.name);
 	const name = req.params.name;
-	res.json({ message: ['Hello, world!'], name });
-});
-
-app.get('/products', (req, res) => {
-	const { couleur, taille } = req.query;
-	res.send(`Couleur: ${couleur}, Taille: ${taille}`);
+	getPokemon(name)
+		.then(pokemon => {
+			console.log(pokemon);
+			if (pokemon) {
+				res.status(200).render('about', {
+					pokemon,
+				});
+			} else {
+				res.redirect('/notFound');
+			}
+		})
+		.catch(() => res.redirect('/notFound'));
 });
 
 app.listen(PORT, () => {
