@@ -1,14 +1,4 @@
-import e from 'express';
 import Room from '../models/roomModel.js';
-import { sanitizeFilter } from 'mongoose';
-
-export const getTest = (_, res) => {
-	res.send({ message: 'test page' });
-};
-
-export const postTest = (req, res) => {
-	res.send(req.body);
-};
 
 export const addRoom = async (req, res) => {
 	new Room(req.body)

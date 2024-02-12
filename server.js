@@ -6,7 +6,7 @@ import routes from './routes/routes.js';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 dotenv.config();
 
 const app = express();
