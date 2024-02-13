@@ -1,7 +1,15 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 
 const ContactPage = () => {
-	return <h1>Contact</h1>;
+	console.log('hello');
+	useEffect(() => {
+		console.log('hello');
+	}, []);
+	return (
+		<div className="flex justify-center items-center w-full h-full">
+			<h1>Bonjour</h1>
+		</div>
+	);
 };
 
 const MemoizedContactPage = memo(ContactPage);
