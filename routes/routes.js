@@ -1,10 +1,10 @@
 import express from 'express';
 import {
-	addRoom,
-	getRooms,
-	findRooms,
-	updateRoom,
-	deleteRoom,
+  addRoom,
+  getRooms,
+  findRooms,
+  updateRoom,
+  deleteRoom,
 } from '../controllers/roomController.js';
 import { catchErrors } from '../helpers.js';
 

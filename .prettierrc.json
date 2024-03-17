@@ -15,14 +15,15 @@
 	"singleAttributePerLine": false,
 	"singleQuote": true,
 	"trailingComma": "es5",
-	"useTabs": true,
-	"tabWidth": 4,
+	"useTabs": false,
+	"tabWidth": 2,
 	"vueIndentScriptAndStyle": false,
-    "overrides": [
-        {
-            "files": "*.hbs",
-            "options": {
-                "parser": "glimmer"
-            }
-        }]
+	"overrides": [
+		{
+			"files": "*.hbs",
+			"options": {
+				"parser": "glimmer"
+			}
+		}
+	]
 }
