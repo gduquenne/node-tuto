@@ -10,21 +10,26 @@ export const addRoom = async (req, res) => {
 export const getRooms = async (_, res) =>
   Room.find().then(rooms => res.send(rooms));
 
-export const findRooms = async (req, res) =>
-  Room.find(
-    ...Object.keys(req.body)
+export const findRooms = async (req, res) => {
+  return Room.find(
+    Object.keys(req.body)
       .filter(el => el in Room.schema.paths)
-      .map(el => ({
-        [el]:
-          typeof req.body[el] === 'string'
-            ? req.body[el].toLowerCase()
-            : req.body[el],
-      })),
+      .reduce(
+        (acc, el) => ({
+          ...acc,
+          [el]:
+            typeof req.body[el] === 'string'
+              ? req.body[el].toLowerCase()
+              : req.body[el],
+        }),
+        {}
+      ),
     'name maxOccupancy',
     { skip: 0, limit: 10 }
   )
     .then(room => res.send(room))
     .catch(err => res.status(400).send(err));
+};
 
 export const updateRoom = async (req, res) =>
   Room.findByIdAndUpdate(req.params.id, req.body)
